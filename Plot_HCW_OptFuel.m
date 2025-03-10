@@ -10,7 +10,7 @@ function Plot_HCW_OptFuel
 close all; clear; clc;
 
 % Parameters
-aT = 42165; % km (GEO)
+aT = 42165; % km (Target orbit radius - GEO)
 mu = 398600; % km^3/s^2
 m0 = 50; % kg
 T =  0.0015/1000; % kN (MiXi Thruster 1.5mN)
