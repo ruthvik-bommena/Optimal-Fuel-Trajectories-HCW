@@ -5,13 +5,13 @@ function [t_minU,X_minU,lam0] = HCW_OptFuel(x0,xf,tf,m0,lam0_guess,mu,T,c,rho,aT
 %    Compiler:      MATLAB R2022b
 %    Date:          22 March, 2023
 %    Affiliation:   Department of Aerospace Engineering, University of Illinois Urbana-Champaign.
-%    Description:   Function to propagate HCW states and costates differential equations for a Optimal Fuel Solution
+%    Description:   Function to propagate HCW states and costates differential equations for an Optimal Fuel Solution
 %    Inputs:        Initial and final boundary conditions, time of flight, mass, costate guesses, 
-%                   gravitational parameter, thrust, exhaust velocity, sweeping parameter, semi-major axis.
+%                   gravitational parameter, thrust, exhaust velocity, continuation parameter, target semi-major axis.
 
 % Numerical Solution
 opts_ode = odeset('RelTol',1e-13,'AbsTol',1e-15);
-options = optimoptions('fsolve','Display','iter','MaxFunEvals',1e3,'MaxIter',1e3,'TolFun',1e-14,'TolX',1e-12,'UseParallel',true);
+options = optimoptions('fsolve','Display','iter','MaxFunEvals',1e3,'MaxIter',1e3,'TolFun',1e-14,'TolX',1e-12,'UseParallel',false);
 
 [lam0,~] = fsolve(@cost_minU,lam0_guess,options,0,tf,[x0; m0],xf,mu,T,c,rho,opts_ode,aT);
 
@@ -29,17 +29,16 @@ lambda_r = X(8:10);
 lambda_v = X(11:13); 
 lambda_m = X(14);
 
-mag_primerVec = norm(lambda_v);
-S = mag_primerVec - 1; % Switch Function
+S = norm(lambda_v)*c/m + lambda_m - 1; % Switch Function
 delta = 0.5*(1+tanh(S/rho)); % Throttle
 
-% accelaration vectors
-ux = -T/m*delta*lambda_v(1)/mag_primerVec; 
-uy = -T/m*delta*lambda_v(2)/mag_primerVec;
-uz = -T/m*delta*lambda_v(3)/mag_primerVec;
+% accelaration components
+ux = -T/m*delta*lambda_v(1)/norm(lambda_v); 
+uy = -T/m*delta*lambda_v(2)/norm(lambda_v);
+uz = -T/m*delta*lambda_v(3)/norm(lambda_v);
 
 % State Dynamics
-n = sqrt(mu/aT^3);
+n = sqrt(mu/aT^3); % mean motion
 
 xDot = [x(4);x(5);x(6);...
         3*n^2*x(1) + 2*n*x(5) + ux;...
