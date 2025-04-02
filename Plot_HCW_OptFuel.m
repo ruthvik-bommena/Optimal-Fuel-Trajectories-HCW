@@ -13,10 +13,10 @@ close all; clear; clc;
 aT = 42165; % km (Target orbit radius - GEO)
 mu = 398600; % km^3/s^2
 m0 = 50; % kg
-T =  0.0015/1000; % kN (MiXi Thruster 1.5mN)
+T =  0.0015/1000; % kN (MiXI Thruster 1.5mN)
 Isp = 4190; % s
 g0 = 9.8/1000; % km/s^2
-c = Isp*g0/1000; % km/s
+c = Isp*g0; % km/s
 
 % Boundary conditions (km and km/s)
 x0 = [0 1 0 0 0 0]';
